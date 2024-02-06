@@ -1,0 +1,185 @@
+<%- include('layouts/header.ejs') %>
+
+
+<div class="container">
+
+    <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createGroupModal">
+    Create Group
+  </button>
+
+  <% 
+    if (typeof message !== 'undefined') {
+        %>
+        <p style="color: green;"><%= message %></p>
+        <%
+    }
+  %>
+
+  <table class="table mt-4">
+    
+    <thead>
+        <tr>
+            <th>S.No</th>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Limit</th>
+            <th>Member</th>
+            <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+    <% if (groups.length > 0) { %>
+        <% for (let index = 0; index < groups.length; index++) { %>
+            <tr>
+                <td><%= index + 1 %></td>    
+                <td>
+                    <img src="http://127.0.0.1:5000/<%= groups[index]['image'] %>" alt="<%= groups[index]['name'] %>" width="50px" height="50px">
+                </td>
+                <td><%= groups[index]['name']%></td>    
+                <td><%= groups[index]['limit']%></td>    
+                <td>
+                    <a class="cursor-pointer addMember" data-id="<%= groups[index]['_id']%>" data-limit="<%= groups[index]['limit']%>" data-toggle="modal" data-target="#MemberModal">Member</a>
+                    </td>    
+            </tr>
+        <% } %>
+    <% } else { %>
+        <tr>
+            <td colspan="2">No Groups Found</td>
+        </tr>
+    <% } %>
+</tbody>
+
+    
+    </table>
+    <!--Member Modal -->
+  <div class="modal fade" id="MemberModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Members</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="" id="add-member-form">
+        <div class="modal-body">
+
+            <input type="hidden" name="group_id" id="group_id">
+            <input type="hidden" name="limit" id="limit">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Name</th>
+                </tr>
+            </thead> 
+            <tbody class="addMemberTable">
+                
+            </tbody>   
+            </table>
+            
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Update Member</button>
+        </div>
+    </form>
+      </div>
+    </div>
+  </div>
+  <div id="content" class="p-4 p-md-5 pt-5"> Groups</div>
+</div>
+
+  
+  <!-- Modal -->
+  <div class="modal fade" id="createGroupModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="" enctype="multipart/form-data" method="post">
+        <div class="modal-body">
+          
+            <input type="text" name="name" placeholder="Enter Group Name" required class="w-100 mb-2"/>
+            <input type="file" name="image" required class="w-100 mb-2"/>
+            <input type="number" min="1" placeholder="Enter User Limit" name="limit" required class="w-100 mb-2"/>
+
+        </div>
+        <div class="modal-footer">
+            <p class="add-members-error"></p>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+    </form>
+      </div>
+    </div>
+  </div>
+  <div id="content" class="p-4 p-md-5 pt-5"> Groups</div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    $('.addMember').click(function(){
+    var id = $(this).attr('data-id')
+    var limit = $(this).attr('data-limit')
+
+    $('#group_id').val(id);
+    $('#limit').val(limit);
+})
+
+$.ajax({
+    url:'/get-members',
+    type: 'POST',
+    data:{},
+    success:function(res){
+        if (res.success == true) {
+            let users = res.data;
+            let html = '';
+            for(let i = 0; i < users.length; i++){
+                html += `
+                <tr>
+                    <td>
+                        <input type="checkbox" name="members[]" value="`+users[i]["_id"]+`"/>    
+                    </td>
+                    <td>`+users[i]['name']+`</td>
+                </tr>
+                `
+            }
+            $('.addMemberTable').html(html)
+        } else {
+            alert(res.msg)
+        }
+    }
+})
+
+$('#add-member-form').submit(function(event){
+    event.preventDefault();
+
+    var formData = $(this).serialize();
+
+    axios.post('/add-members', formData)
+    .then(res => {
+        if (res.data.success) {
+            $('#MemberModal').modal('hide');
+            $('#add-member-form')[0].reset();
+            alert(res.data.msg);
+        } else {
+            alert(res.data.msg);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+
+})
+    </script>
+
+    
+
+<%- include('layouts/footer.ejs') %>

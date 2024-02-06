@@ -1,0 +1,55 @@
+<%- include('layouts/header.ejs') %>
+<div class="row">
+    <div class="col-md-4">
+        <ul class="list-group">
+            <%
+                if (users.length > 0) {
+                    for (let index = 0; index < users.length; index++) {
+                    %>
+                        <li class="list-group-item list-group-item-dark curser-pointer user-list data" data-id="<%= users[index]['_id']%>">
+                            <img src="<%= 'http://127.0.0.1:5000/' + users[index]['image'] %>" alt="" width="50px" height="50px">
+                            <%= users[index]['name'] %>
+                            <%
+                                if (users[index]['is_online']==1) {
+                                    %>
+                                    <sup class="online-status" id="<%= users[index]['_id']%> -status">Online</sup>
+                                    <!-- Add this to the chat container -->
+                                    <div id="typing-status" style="font-size: 10px;"></div>
+
+                                    <%
+                                } else {
+                                    %>
+                                    <sup class="offline-status" id="<%= users[index]['_id']%> -status">
+                                        Last seen <%= users[index]['last_seen'] %>
+                                    </sup>
+                                    <%
+                                }
+                            %>
+                        </li>
+                    <%
+                    }
+                }
+            %>
+        </ul>
+    </div>
+    <div class="col-md-8">
+       
+       <h3 class="start-chat">Click to start the chat</h3>
+       <div class="chat-section">
+           <div id="chat-container">
+
+
+           </div>
+           <form action="" id="chat-form">
+               <input type="text" name="message" placeholder="Enter Message" id="message" class="border"  required/>
+               <input type="submit" value="Send Message" class="btn btn-primary">
+           </form>
+       </div>
+   </div>
+    
+<div id="content" class="p-4 p-md-5 pt-5"> Hii, <%= user.name %></div>
+    
+</div>
+
+
+<%- include('layouts/footer.ejs') %>

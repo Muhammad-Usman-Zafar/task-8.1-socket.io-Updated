@@ -1,0 +1,60 @@
+<%- include('layouts/header.ejs') %>
+
+
+
+<div class="row">
+    <div class="col-md-4">
+        <ul class="list-group">
+            <%
+                if (myGroups.length > 0) {
+                    for (let index = 0; index < myGroups.length; index++) {
+                    %>
+                        <li class="list-group-item list-group-item-dark curser-pointer group-list data" data-id="<%= myGroups[index]['_id']%>">
+                            <img src="/<%= myGroups[index]['image'] %>" alt="" width="50px" height="50px">
+                            <%= myGroups[index]['name'] %>
+                            
+                        </li>
+                    <%
+                    }
+                }
+            %>
+
+            <!--joined Groups-->
+            <%
+                if (joinedGroups.length > 0) {
+                    for (let index = 0; index < joinedGroups.length; index++) {
+                    %>
+                        <li class="list-group-item list-group-item-dark curser-pointer group-list data" data-id="<%= joinedGroups[index]['group_id']['_id']%>">
+                            <img src="/<%= joinedGroups[index]['group_id']['image'] %>" alt="" width="50px" height="50px">
+                            <%= joinedGroups[index]['group_id']['name'] %>
+                            
+                        </li>
+                    <%
+                    }
+                }
+            %>
+
+
+        </ul>
+    </div>
+    <div class="col-md-8">
+       
+       <h3 class="group-start-chat">Click to start the chat</h3>
+       <div class="group-chat-section">
+           <div id="group-chat-container">
+
+
+           </div>
+           <form action="" id="group-chat-form">
+               <input type="text" name="message" placeholder="Enter Message" id="group-message" class="border"  required/>
+               <input type="submit" value="Send Message" class="btn btn-primary">
+           </form>
+       </div>
+   </div>
+    
+   <div id="content" class="p-4 p-md-5 pt-5"> Group Chatting</div>
+    
+</div>
+
+
+<%- include('layouts/footer.ejs') %>
